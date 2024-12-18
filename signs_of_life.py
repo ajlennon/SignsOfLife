@@ -1,11 +1,18 @@
+import os
 import time
 import smtplib
 from pynput import mouse, keyboard
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import subprocess
+from datetime import datetime
+
 from dotenv import dotenv_values, find_dotenv
 
 # [active]->-send inactive->-[inactive]->-event->-[waking]->-send wake->-[active]
+
+# File to update
+TIMESTAMP_FILE = "last_active.txt"
 
 # --- Settings ---
 env = dotenv_values(find_dotenv())
@@ -21,6 +28,12 @@ class StateMachine:
         self.state = "active"  # Initial state
         self.last_activity = time.time()
         self.alert_interval = alert_interval
+        self.update_timestamp() # initialise timestamp upon start up
+
+    def update_timestamp(self):
+        with open(TIMESTAMP_FILE, "w") as f:
+            current_time = datetime.now().isoformat()
+            f.write(f"Last activity: {current_time}\n")
 
     def update_activity(self):
         """Update the last activity timestamp and handle waking state."""
@@ -46,6 +59,9 @@ class StateMachine:
             self.change_state("inactive")
         elif self.state == "waking":
             self.change_state("active")
+            self.update_timestamp()
+        else:
+            self.update_timestamp()
 
     def send_email(self, subject, body):
         """Send an email notification."""
@@ -69,12 +85,13 @@ class StateMachine:
 
 # --- Main Application ---
 def main():
+
     state_machine = StateMachine(ALERT_INTERVAL)
 
     # Listener for keyboard and mouse activity
     def on_activity(*args):
         state_machine.update_activity()
-
+        
     # Setup listeners
     keyboard_listener = keyboard.Listener(on_press=on_activity)
     mouse_listener = mouse.Listener(on_move=on_activity)
