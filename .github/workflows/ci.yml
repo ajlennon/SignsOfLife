@@ -1,0 +1,27 @@
+name: Standard CI/CD
+
+on: [push]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    env:
+      # Example non-sensitive variable
+      CHECK_INTERVAL_SECONDS: ${{ vars.CHECK_INTERVAL_SECONDS }}  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run script with secrets
+        env:
+            SENDER_EMAIL_ADDRESS: ${{ secrets.SENDER_EMAIL_ADDRESS }}
+            SENDER_EMAIL_PASSWORD: ${{ secrets.SENDER_EMAIL_PASSWORD }}
+            RECIPIENT_EMAIL_ADDRESS: ${{ secrets.SENDER_EMAIL_ADDRESS }}
+        run: |
+          #python signs_of_life.py
