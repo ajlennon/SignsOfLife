@@ -63,6 +63,8 @@ class StateMachine:
             "Cache-Control": "no-cache"
         } if GITHUB_TOKEN else {}
 
+        self.pull_from_repo()
+
         # Fetch state file metadata
         response = requests.get(f"{STATE_URL}?token={time.time()}", headers=headers)
         if response.status_code != 200:
