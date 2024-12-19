@@ -37,8 +37,6 @@ class StateMachine:
     def __init__(self, alert_interval):
         self.last_activity = time.time()
         self.alert_interval = alert_interval
-        #timestamp = self.timestamp
-        #self.update_timestamp() # initialise timestamp upon start up
         self.state = 'active'
 
     @property
@@ -99,10 +97,10 @@ class StateMachine:
             self.push_to_repo([STATE_FILE])
         elif self.state == "waking":
         #    self.update_state("active")
-            timestamp = self.timestamp
+            self.timestamp
             self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
         else:
-            timestamp = self.timestamp
+            self.timestamp
             self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
 
     def pull_from_repo(self):
@@ -113,7 +111,7 @@ class StateMachine:
         """Push updates to the repository."""
         repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
         try:
-            timestamp = self.timestamp
+            self.timestamp
             subprocess.run(["git", "commit", "-a", "-m", f"auto-update of {file}"], check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             # force push is safe as knowledge of current state is updated from the repo file via API
