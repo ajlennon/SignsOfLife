@@ -4,7 +4,6 @@
 #3. IF state needs to change, write state back to repo via force push
 #4. Remove lockfile
 
-
 import os
 import time
 import smtplib
@@ -33,21 +32,13 @@ BRANCH = env['BRANCH']
 TIMESTAMP_FILE = env['TIMESTAMP_FILE']
 STATE_FILE = env['STATE_FILE']
 
-# WARNING: this is not write-concurrency-safe (multiple devices simultaneously updating state)
-STATE_URL = env['STATE_URL']
-
 # --- StateMachine Class ---
 class StateMachine:
     def __init__(self, alert_interval):
-        self.state = "blobby"  # Initial state
-        self.state = "qwerty"  # Initial state
-        print(self.state)
-        exit()
         self.last_activity = time.time()
         self.alert_interval = alert_interval
         self.update_timestamp() # initialise timestamp upon start up
-        self.update_state('active') # initialise state upon start up
-        #self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
+        self.state = 'active'
 
     @property
     def state(self):
@@ -65,120 +56,12 @@ class StateMachine:
         except:
             return None
 
-
-
-    def rest_get_state(self):
-        """
-        returns the content of the repository state file located at STATE_URL.
-        STATE_URL is configurable in the .env file.
-        
-        Returns:
-            str: The content of the state file if successful, None otherwise.
-        """
-        headers = {
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
-            "Cache-Control": "no-cache"
-        } if GITHUB_TOKEN else {}
-
-        self.pull_from_repo()
-        with open(STATE_FILE, "r", encoding="utf-8") as file:
-            print(file.read().strip())
-            print("hello")
-        exit()
-
-        # Fetch state file metadata
-        response = requests.get(f"{STATE_URL}?token={time.time()}", headers=headers)
-        if response.status_code != 200:
-            print(f"Error fetching file metadata: {response.status_code}")
-            return None
-
-        try:
-            # Parse the metadata and extract the download URL and SHA
-            data = response.json()
-            file_content_url = data.get("download_url")
-
-            if not file_content_url:
-                print("Download URL not found in response.")
-                return None
-
-            # Fetch raw file content
-            file_response = requests.get(file_content_url)
-            if file_response.status_code == 200:
-                return file_response.text
-            else:
-                print(f"Error fetching raw file content: {file_response.status_code}")
-                return None
-        except (ValueError, KeyError) as e:
-            print(f"Error parsing response: {e}")
-            return None
-
     @state.setter
     def state(self, state):
         self.pull_from_repo()
         with open(STATE_FILE, "w") as f:
             f.write(f"Last activity: {state}")
         self.push_to_repo(STATE_FILE)
-
-    def rest_put_state(self, state):
-        headers = {
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github+json"
-        } if GITHUB_TOKEN else {}
-
-        # File content and commit message
-        content = state
-        encoded_content = base64.b64encode(content.encode()).decode()
-        commit_message = f"updating state to {state}"
-        state_sha = self.state_sha
-
-        # Create or update the file
-        data = {
-            "message": commit_message,
-            "content": encoded_content,
-            "branch": BRANCH
-        }
-        if state_sha:
-            data["sha"] = state_sha # if updating, include the SHA
-
-        response = requests.put(STATE_URL, headers=headers, json=data)
-
-        if response.status_code in (200, 201):
-            return state
-        else:
-            print("Failed to update file:", response.json())
-
-
-    @property
-    def state_sha(self):
-        """
-        returns the SHA of the repository state file located at STATE_URL.
-        STATE_URL is configurable in the .env file.
-        
-        Returns:
-            str: The SHA of the state file if successful, None otherwise.
-        """
-        headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"} if GITHUB_TOKEN else {}
-
-        # Fetch state file metadata
-        response = requests.get(STATE_URL, headers=headers)
-        if response.status_code != 200:
-            print(f"Error fetching file metadata: {response.status_code}")
-            return None
-
-        try:
-            # Parse the metadata and extract the download URL and SHA
-            data = response.json()
-            state_sha = data.get("sha") 
-
-            if not state_sha:
-                print("SHA not found in response.")
-                return None
-            else:
-                return state_sha
-
-        except (ValueError, KeyError) as e:
-            print(f"Error parsing response: {e}")
-            return None
 
 
     def update_activity(self):
@@ -237,24 +120,8 @@ class StateMachine:
             # force push is safe as knowledge of current state is updated from the repo file via API
             subprocess.run(["git", "push", "--force", repo_url_with_token, BRANCH],  check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            print("Changes pushed successfully!")
         except subprocess.CalledProcessError as e:
             print(f"Failed to push changes: {e}")
-
-#    def push_to_repo(self, file_list):
-#        """Push updates to the repository."""
-#        repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
-#        try:
-#            subprocess.run(["git", "add", *file_list], 
-#                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-#            subprocess.run(["git", "commit", "-m", f"auto-update of {STATE_FILE} and {TIMESTAMP_FILE}"],
-#                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-            # force push is safe as knowledge of current state is updated from the repo file via API
-#            subprocess.run(["git", "push", "--force", repo_url_with_token, BRANCH], 
-#                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-#            print("Changes pushed successfully!")
-#        except subprocess.CalledProcessError as e:
-#            print(f"Failed to push changes: {e}")
 
     def send_email(self, subject, body):
         """Send an email notification."""
@@ -303,3 +170,128 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# STATE_URL = env['STATE_URL']
+#
+#    def push_to_repo(self, file_list):
+#        """Push updates to the repository."""
+#        repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
+#        try:
+#            subprocess.run(["git", "add", *file_list], 
+#                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+#            subprocess.run(["git", "commit", "-m", f"auto-update of {STATE_FILE} and {TIMESTAMP_FILE}"],
+#                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            # force push is safe as knowledge of current state is updated from the repo file via API
+#            subprocess.run(["git", "push", "--force", repo_url_with_token, BRANCH], 
+#                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+#            print("Changes pushed successfully!")
+#        except subprocess.CalledProcessError as e:
+#            print(f"Failed to push changes: {e}")
+
+
+
+#    def rest_get_state(self):
+#        """
+#        returns the content of the repository state file located at STATE_URL.
+#        STATE_URL is configurable in the .env file.
+#        
+#        Returns:
+#            str: The content of the state file if successful, None otherwise.
+#        """
+#        headers = {
+#            "Authorization": f"Bearer {GITHUB_TOKEN}",
+#            "Cache-Control": "no-cache"
+#        } if GITHUB_TOKEN else {}
+#
+#        self.pull_from_repo()
+#        with open(STATE_FILE, "r", encoding="utf-8") as file:
+#            print(file.read().strip())
+#            print("hello")
+#        exit()
+#
+#        # Fetch state file metadata
+#        response = requests.get(f"{STATE_URL}?token={time.time()}", headers=headers)
+#        if response.status_code != 200:
+#            print(f"Error fetching file metadata: {response.status_code}")
+#            return None
+#
+#        try:
+#            # Parse the metadata and extract the download URL and SHA
+#            data = response.json()
+#            file_content_url = data.get("download_url")
+#
+#            if not file_content_url:
+#                print("Download URL not found in response.")
+#                return None
+#
+#            # Fetch raw file content
+#            file_response = requests.get(file_content_url)
+#            if file_response.status_code == 200:
+#                return file_response.text
+#            else:
+#                print(f"Error fetching raw file content: {file_response.status_code}")
+#                return None
+#        except (ValueError, KeyError) as e:
+#            print(f"Error parsing response: {e}")
+#            return None
+#
+#    def rest_put_state(self, state):
+#        headers = {
+#            "Authorization": f"Bearer {GITHUB_TOKEN}",
+#            "Accept": "application/vnd.github+json"
+#        } if GITHUB_TOKEN else {}
+#
+#        # File content and commit message
+#        content = state
+#        encoded_content = base64.b64encode(content.encode()).decode()
+#        commit_message = f"updating state to {state}"
+#        state_sha = self.state_sha
+#
+#        # Create or update the file
+#        data = {
+#            "message": commit_message,
+#            "content": encoded_content,
+#            "branch": BRANCH
+#        }
+#        if state_sha:
+#            data["sha"] = state_sha # if updating, include the SHA
+#
+#        response = requests.put(STATE_URL, headers=headers, json=data)
+#
+#        if response.status_code in (200, 201):
+#            return state
+#        else:
+#            print("Failed to update file:", response.json())
+#
+#    @property
+#    def state_sha(self):
+#        """
+#        returns the SHA of the repository state file located at STATE_URL.
+#        STATE_URL is configurable in the .env file.
+#        
+#        Returns:
+#            str: The SHA of the state file if successful, None otherwise.
+#        """
+#        headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"} if GITHUB_TOKEN else {}
+#
+#        # Fetch state file metadata
+#        response = requests.get(STATE_URL, headers=headers)
+#        if response.status_code != 200:
+#            print(f"Error fetching file metadata: {response.status_code}")
+#            return None
+#
+#        try:
+#            # Parse the metadata and extract the download URL and SHA
+#            data = response.json()
+#            state_sha = data.get("sha") 
+#
+#            if not state_sha:
+#                print("SHA not found in response.")
+#                return None
+#            else:
+#                return state_sha
+#
+#        except (ValueError, KeyError) as e:
+#            print(f"Error parsing response: {e}")
+#            return None
