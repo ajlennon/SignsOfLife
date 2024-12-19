@@ -64,6 +64,9 @@ class StateMachine:
         } if GITHUB_TOKEN else {}
 
         self.pull_from_repo()
+        with open(STATE_FILE, "r", encoding="utf-8") as file:
+            print(file.read().strip())
+        exit()
 
         # Fetch state file metadata
         response = requests.get(f"{STATE_URL}?token={time.time()}", headers=headers)
