@@ -92,21 +92,22 @@ class StateMachine:
             self.timestamp
             self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
 
-    #def pull_from_repo(self):
-    #    subprocess.run(["git", "pull"], check=True,
-    #                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    def pull_from_repo(self):
+        #subprocess.run(["git", "pull"], check=True,
+        #               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        pass
 
-    async def pull_from_repo(self):
-        """Asynchronously performs a `git pull` to update the repository."""
-        try:
-            process = await asyncio.create_subprocess_exec(
-                "git", "pull",
-                stdout=asyncio.subprocess.DEVNULL,
-                stderr=asyncio.subprocess.DEVNULL
-            )
-            await process.communicate()  # Wait for the process to complete
-        except Exception as e:
-            print(f"Failed to pull from the repository: {e}")
+    #async def pull_from_repo(self):
+    #    """Asynchronously performs a `git pull` to update the repository."""
+    #    try:
+    #        process = await asyncio.create_subprocess_exec(
+    #            "git", "pull",
+    #            stdout=asyncio.subprocess.DEVNULL,
+    #            stderr=asyncio.subprocess.DEVNULL
+    #        )
+    #        await process.communicate()  # Wait for the process to complete
+    #    except Exception as e:
+    #        print(f"Failed to pull from the repository: {e}")
 
     def push_to_repo(self, file):
         """Push updates to the repository."""
