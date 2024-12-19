@@ -71,7 +71,7 @@ class StateMachine:
 
     def update_activity(self):
         """Update the last activity timestamp and handle waking state."""
-        self.last_activity = time.time
+        self.last_activity = time.time()
         if self.state == "inactive":
             self.update_state("waking")
 
