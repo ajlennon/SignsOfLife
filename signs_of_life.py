@@ -83,31 +83,20 @@ class StateMachine:
         if current_time - self.last_activity > self.alert_interval:
             self.state = "inactive"
             #self.update_state("inactive")
-            self.push_to_repo([STATE_FILE])
-        elif self.state == "waking":
+            #self.push_to_repo(STATE_FILE)
+        #elif self.state == "waking":
         #    self.update_state("active")
-            self.timestamp
-            self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
-        else:
-            self.timestamp
-            self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
+            #self.timestamp
+        #    self.push_to_repo(STATE_FILE)
+        #else:
+            #self.timestamp
+        #    self.push_to_repo(STATE_FILE)
+        self.push_to_repo(STATE_FILE)
 
     def pull_from_repo(self):
         #subprocess.run(["git", "pull"], check=True,
         #               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         pass#print(self.state)
-
-    #async def pull_from_repo(self):
-    #    """Asynchronously performs a `git pull` to update the repository."""
-    #    try:
-    #        process = await asyncio.create_subprocess_exec(
-    #            "git", "pull",
-    #            stdout=asyncio.subprocess.DEVNULL,
-    #            stderr=asyncio.subprocess.DEVNULL
-    #        )
-    #        await process.communicate()  # Wait for the process to complete
-    #    except Exception as e:
-    #        print(f"Failed to pull from the repository: {e}")
 
     def push_to_repo(self, file):
         """Push updates to the repository."""
