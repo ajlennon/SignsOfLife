@@ -95,7 +95,7 @@ class StateMachine:
     def pull_from_repo(self):
         #subprocess.run(["git", "pull"], check=True,
         #               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        print(self.state)
+        pass#print(self.state)
 
     #async def pull_from_repo(self):
     #    """Asynchronously performs a `git pull` to update the repository."""
