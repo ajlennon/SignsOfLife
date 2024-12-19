@@ -64,21 +64,20 @@ class StateMachine:
     @property
     def timestamp(self):
         """Update the timestamp file with and return current timestamp."""
-        timestamp = datetime.now()
+        timestamp = datetime.now().isoformat()
         with open(TIMESTAMP_FILE, "w") as f:
-            f.write(timestamp.isoformat())
+            f.write(timestamp)
         return timestamp
 
     def update_activity(self):
         """Update the last activity timestamp and handle waking state."""
-        self.last_activity = self.timestamp
+        self.last_activity = time.time
         if self.state == "inactive":
             self.update_state("waking")
 
     def check_inactivity(self):
         """Check for inactivity and transition states."""
-        current_time = self.timestamp
-        #time.time()
+        current_time = time.time()
         if current_time - self.last_activity > self.alert_interval:
             self.update_state("inactive")
             self.push_to_repo([STATE_FILE])
