@@ -73,13 +73,15 @@ class StateMachine:
         """Update the last activity timestamp and handle waking state."""
         self.last_activity = time.time()
         if self.state == "inactive":
-            self.update_state("waking")
+            self.state = "waking"
+            #self.update_state("waking")
 
     def check_inactivity(self):
         """Check for inactivity and transition states."""
         current_time = time.time()
         if current_time - self.last_activity > self.alert_interval:
-            self.update_state("inactive")
+            self.state = "inactive"
+            #self.update_state("inactive")
             self.push_to_repo([STATE_FILE])
         elif self.state == "waking":
         #    self.update_state("active")
