@@ -66,6 +66,7 @@ class StateMachine:
         self.pull_from_repo()
         with open(STATE_FILE, "r", encoding="utf-8") as file:
             print(file.read().strip())
+            print("hello")
         exit()
 
         # Fetch state file metadata
