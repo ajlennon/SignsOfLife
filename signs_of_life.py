@@ -64,9 +64,9 @@ class StateMachine:
     @property
     def timestamp(self):
         """Update the timestamp file with and return current timestamp."""
-        timestamp = datetime.now().isoformat()
+        timestamp = datetime.now()
         with open(TIMESTAMP_FILE, "w") as f:
-            f.write(timestamp)
+            f.write(timestamp.isoformat())
         return timestamp
 
     def update_activity(self):
