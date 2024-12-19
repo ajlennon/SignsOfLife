@@ -35,7 +35,7 @@ STATE_FILE = env['STATE_FILE']
 # --- StateMachine Class ---
 class StateMachine:
     def __init__(self, alert_interval):
-        self.last_activity = self.timestamp
+        self.last_activity = time.time
         self.alert_interval = alert_interval
         self.state = 'active'
 
