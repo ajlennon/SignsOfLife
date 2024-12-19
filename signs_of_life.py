@@ -63,6 +63,7 @@ class StateMachine:
 
     @property
     def timestamp(self):
+        """Update the timestamp file with and return current timestamp."""
         timestamp = str(datetime.now().isoformat())
         with open(TIMESTAMP_FILE, "w") as f:
             f.write(timestamp)
@@ -73,21 +74,6 @@ class StateMachine:
         self.last_activity = self.timestamp
         if self.state == "inactive":
             self.update_state("waking")
-
-    def update_state(self, new_state):
-        """Change state and perform actions if necessary."""
-        # only act on state CHANGE
-        if new_state == "inactive" and self.state == "active":
-            self.send_email(
-                "User Inactivity Alert",
-                f"No user activity detected in the past {self.alert_interval} seconds.",
-            )
-        # only act on state CHANGE
-        elif new_state == "waking" and self.state == "inactive":
-            self.send_email("User Waking Alert", "User has woken up.")
-        self.state = new_state
-        with open(STATE_FILE, "w") as f:
-            f.write(f"{self.state}\n")
 
     def check_inactivity(self):
         """Check for inactivity and transition states."""
@@ -294,3 +280,19 @@ if __name__ == "__main__":
 #        except (ValueError, KeyError) as e:
 #            print(f"Error parsing response: {e}")
 #            return None
+
+
+#    def update_state(self, new_state):
+#        """Change state and perform actions if necessary."""
+#        # only act on state CHANGE
+#        if new_state == "inactive" and self.state == "active":
+#            self.send_email(
+#                "User Inactivity Alert",
+#                f"No user activity detected in the past {self.alert_interval} seconds.",
+#            )
+#        # only act on state CHANGE
+#        elif new_state == "waking" and self.state == "inactive":
+#            self.send_email("User Waking Alert", "User has woken up.")
+#        self.state = new_state
+#        with open(STATE_FILE, "w") as f:
+#            f.write(f"{self.state}\n")
