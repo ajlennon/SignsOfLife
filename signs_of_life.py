@@ -59,7 +59,8 @@ class StateMachine:
             str: The content of the state file if successful, None otherwise.
         """
         headers = {
-            "Authorization": f"Bearer {GITHUB_TOKEN}"
+            "Authorization": f"Bearer {GITHUB_TOKEN}",
+            "Cache-Control": "no-cache"
         } if GITHUB_TOKEN else {}
 
         # Fetch state file metadata
