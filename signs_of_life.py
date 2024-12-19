@@ -77,7 +77,8 @@ class StateMachine:
 
     def check_inactivity(self):
         """Check for inactivity and transition states."""
-        current_time = time.time()
+        current_time = self.timestamp
+        #time.time()
         if current_time - self.last_activity > self.alert_interval:
             self.update_state("inactive")
             self.push_to_repo([STATE_FILE])
