@@ -35,7 +35,7 @@ STATE_FILE = env['STATE_FILE']
 # --- StateMachine Class ---
 class StateMachine:
     def __init__(self, alert_interval):
-        self.last_activity = time.time()
+        self.last_activity = self.timestamp
         self.alert_interval = alert_interval
         self.state = 'active'
 
@@ -64,7 +64,7 @@ class StateMachine:
     @property
     def timestamp(self):
         """Update the timestamp file with and return current timestamp."""
-        timestamp = str(datetime.now().isoformat())
+        timestamp = datetime.now().isoformat()
         with open(TIMESTAMP_FILE, "w") as f:
             f.write(timestamp)
         return timestamp
