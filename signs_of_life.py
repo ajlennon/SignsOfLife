@@ -47,7 +47,7 @@ class StateMachine:
         self.alert_interval = alert_interval
         self.update_timestamp() # initialise timestamp upon start up
         self.update_state('active') # initialise state upon start up
-        self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
+        #self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
 
     @property
     def state(self):
@@ -196,11 +196,14 @@ class StateMachine:
             current_time = datetime.now().isoformat()
             f.write(f"Last activity: {current_time}\n")
 
+    def pull_from_repo(self):
+        subprocess.run(["git", "pull"], check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
     def push_to_repo(self, file):
         """Push updates to the repository."""
         repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
         try:
-            subprocess.run(["git", "pull"], check=True)
             #subprocess.run(["git", "add", file], check=True,
             #               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             subprocess.run(["git", "commit", "-a", "-m", f"auto-update of {file}"], check=True)#,
