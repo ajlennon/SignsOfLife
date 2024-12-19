@@ -50,7 +50,7 @@ class StateMachine:
             str: The content of the state file if successful, None otherwise.
         """
         try:
-            self.pull_from_repo()
+            await self.pull_from_repo()
             with open(STATE_FILE, "r", encoding="utf-8") as file:
                 return file.read().strip()
         except:
