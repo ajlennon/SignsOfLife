@@ -58,7 +58,7 @@ class StateMachine:
     @state.setter
     def state(self, state):
         with open(STATE_FILE, "w") as f:
-            f.write(f"Last activity: {state}")
+            f.write(state)
         self.push_to_repo(STATE_FILE)
 
     @property
@@ -145,8 +145,8 @@ def main():
     # Periodically check inactivity
     while True:
         print(state_machine.state)
-        state_machine.state = 'blob'
-        exit()
+        #state_machine.state = 'blob'
+        #exit()
         state_machine.check_inactivity()
         time.sleep(CHECK_INTERVAL)  # Check more frequently than the alert threshold
 
