@@ -37,7 +37,7 @@ class StateMachine:
     def __init__(self, alert_interval):
         self.last_activity = time.time()
         self.alert_interval = alert_interval
-        timestamp = self.timestamp
+        #timestamp = self.timestamp
         #self.update_timestamp() # initialise timestamp upon start up
         self.state = 'active'
 
