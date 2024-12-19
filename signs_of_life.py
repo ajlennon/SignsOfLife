@@ -77,10 +77,10 @@ class StateMachine:
             self.state = "waking"
             #self.update_state("waking")
 
-    def check_inactivity(self):
+    def check_activity(self):
         """Check for inactivity and transition states."""
-        current_time = time.time()
-        if current_time - self.last_activity > self.alert_interval:
+        time_diff = time.time() - self.last_activity
+        if time_diff > self.alert_interval:
             self.state = "inactive"
             #self.update_state("inactive")
             #self.push_to_repo(STATE_FILE)
@@ -150,7 +150,7 @@ def main():
     # Periodically check inactivity
     while True:
         print(state_machine.state)
-        state_machine.check_inactivity()
+        state_machine.check_activity()
         time.sleep(CHECK_INTERVAL)  # Check more frequently than the alert threshold
 
 
