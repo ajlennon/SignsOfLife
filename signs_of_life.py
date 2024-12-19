@@ -65,12 +65,10 @@ class StateMachine:
 
     @property
     def timestamp(self):
-        return str(datetime.now().isoformat())
-
-    @timestamp.setter
-    def timestamp(self, timestamp):
+        timestamp = str(datetime.now().isoformat())
         with open(TIMESTAMP_FILE, "w") as f:
             f.write(timestamp)
+        return timestamp
 
     def update_activity(self):
         """Update the last activity timestamp and handle waking state."""
