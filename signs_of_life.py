@@ -58,15 +58,22 @@ class StateMachine:
 
     @state.setter
     def state(self, state):
-        #self.pull_from_repo()
         with open(STATE_FILE, "w") as f:
             f.write(f"Last activity: {state}")
         self.push_to_repo(STATE_FILE)
 
+    @property
+    def timestamp(self):
+        return str(datetime.now().isoformat())
+
+    @timestamp.setter
+    def timestamp(self, timestamp):
+        with open(TIMESTAMP_FILE, "w") as f:
+            f.write(timestamp)
 
     def update_activity(self):
         """Update the last activity timestamp and handle waking state."""
-        self.last_activity = time.time()
+        self.last_activity = self.timestamp
         if self.state == "inactive":
             self.update_state("waking")
 
@@ -93,16 +100,11 @@ class StateMachine:
             self.push_to_repo([STATE_FILE])
         elif self.state == "waking":
         #    self.update_state("active")
-            self.update_timestamp()
+            timestamp = self.timestamp
             self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
         else:
-            self.update_timestamp()
+            timestamp = self.timestamp
             self.push_to_repo([STATE_FILE, TIMESTAMP_FILE])
-
-    def update_timestamp(self):
-        with open(TIMESTAMP_FILE, "w") as f:
-            current_time = datetime.now().isoformat()
-            f.write(f"Last activity: {current_time}\n")
 
     def pull_from_repo(self):
         subprocess.run(["git", "pull"], check=True,
@@ -112,7 +114,7 @@ class StateMachine:
         """Push updates to the repository."""
         repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
         try:
-            self.update_timestamp()
+            timestamp = self.timestamp
             subprocess.run(["git", "commit", "-a", "-m", f"auto-update of {file}"], check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             # force push is safe as knowledge of current state is updated from the repo file via API
