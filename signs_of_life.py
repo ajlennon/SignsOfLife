@@ -40,7 +40,7 @@ STATE_URL = env['STATE_URL']
 class StateMachine:
     def __init__(self, alert_interval):
         #self.state = "blobby"  # Initial state
-        self.state = "qwertyxxx"  # Initial state
+        self.state = "qwerty"  # Initial state
         print(self.state)
         exit()
         self.last_activity = time.time()
