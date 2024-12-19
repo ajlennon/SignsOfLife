@@ -52,6 +52,23 @@ class StateMachine:
     @property
     def state(self):
         """
+        returns the content of the repository state file (STATE_FILE).
+        STATE_FILE is configurable in the .env file.
+        
+        Returns:
+            str: The content of the state file if successful, None otherwise.
+        """
+        try:
+            self.pull_from_repo()
+            with open(STATE_FILE, "r", encoding="utf-8") as file:
+                return file.read().strip()
+        except:
+            return None
+
+
+
+    def rest_get_state(self):
+        """
         returns the content of the repository state file located at STATE_URL.
         STATE_URL is configurable in the .env file.
         
@@ -102,7 +119,7 @@ class StateMachine:
             f.write(f"Last activity: {state}")
         self.push_to_repo(STATE_FILE)
 
-    def put_state(self, state):
+    def rest_put_state(self, state):
         headers = {
             "Authorization": f"Bearer {GITHUB_TOKEN}",
             "Accept": "application/vnd.github+json"
