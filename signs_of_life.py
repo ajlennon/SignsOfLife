@@ -206,8 +206,8 @@ class StateMachine:
         repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
         try:
             self.update_timestamp()
-            subprocess.run(["git", "add", file], check=True,
-                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            #subprocess.run(["git", "add", file], check=True,
+            #               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             subprocess.run(["git", "commit", "-a", "-m", f"auto-update of {file}"], check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             # force push is safe as knowledge of current state is updated from the repo file via API
