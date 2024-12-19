@@ -90,6 +90,7 @@ class StateMachine:
 
     @state.setter
     def state(self, state):
+        self.pull_from_repo()
         with open(STATE_FILE, "w") as f:
             f.write(f"Last activity: {state}")
         self.push_to_repo(STATE_FILE)
