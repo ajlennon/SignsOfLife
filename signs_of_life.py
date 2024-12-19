@@ -41,7 +41,7 @@ class StateMachine:
         self.state = 'active'
 
     @property
-    async def state(self):
+    def state(self):
         """
         returns the content of the repository state file (STATE_FILE).
         STATE_FILE is configurable in the .env file.
@@ -50,7 +50,7 @@ class StateMachine:
             str: The content of the state file if successful, None otherwise.
         """
         try:
-            await self.pull_from_repo()
+            self.pull_from_repo()
             with open(STATE_FILE, "r", encoding="utf-8") as file:
                 return file.read().strip()
         except:
