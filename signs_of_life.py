@@ -4,7 +4,7 @@
 #3. IF state needs to change, write state back to repo via force push
 #4. Remove lockfile
 
-import os
+#import os
 import time
 import smtplib
 from pynput import mouse, keyboard
@@ -12,8 +12,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import subprocess
 from datetime import datetime
-import requests
-import base64
+#import requests
+#import base64
 
 from dotenv import dotenv_values, find_dotenv
 
@@ -37,7 +37,7 @@ class StateMachine:
     def __init__(self, alert_interval):
         self.last_activity = time.time()
         self.alert_interval = alert_interval
-        self.update_timestamp() # initialise timestamp upon start up
+        #self.update_timestamp() # initialise timestamp upon start up
         self.state = 'active'
 
     @property
@@ -58,7 +58,7 @@ class StateMachine:
 
     @state.setter
     def state(self, state):
-        self.pull_from_repo()
+        #self.pull_from_repo()
         with open(STATE_FILE, "w") as f:
             f.write(f"Last activity: {state}")
         self.push_to_repo(STATE_FILE)
@@ -113,8 +113,6 @@ class StateMachine:
         repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
         try:
             self.update_timestamp()
-            #subprocess.run(["git", "add", file], check=True,
-            #               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             subprocess.run(["git", "commit", "-a", "-m", f"auto-update of {file}"], check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             # force push is safe as knowledge of current state is updated from the repo file via API
@@ -173,6 +171,8 @@ if __name__ == "__main__":
 
 
 # STATE_URL = env['STATE_URL']
+#
+# subprocess.run(["git", "add", file], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 #
 #    def push_to_repo(self, file_list):
 #        """Push updates to the repository."""
