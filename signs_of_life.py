@@ -82,17 +82,6 @@ class StateMachine:
         if time.time() - self.last_activity > self.alert_interval:
             self.local_state = "inactive"
         self.remote_state = self.local_state
-        
-
-            #self.update_state("inactive")
-            #self.push_to_remote(STATE_FILE)
-        #elif self.state == "waking":
-        #    self.update_state("active")
-            #self.timestamp
-        #    self.push_to_remote(STATE_FILE)
-        #else:
-            #self.timestamp
-        #    self.push_to_remote(STATE_FILE)
 
     def pull_from_remote(self):
         subprocess.run(["git", "pull"], check=True,
@@ -299,3 +288,15 @@ if __name__ == "__main__":
 #        self.state = new_state
 #        with open(STATE_FILE, "w") as f:
 #            f.write(f"{self.state}\n")
+
+
+
+            #self.update_state("inactive")
+            #self.push_to_remote(STATE_FILE)
+        #elif self.state == "waking":
+        #    self.update_state("active")
+            #self.timestamp
+        #    self.push_to_remote(STATE_FILE)
+        #else:
+            #self.timestamp
+        #    self.push_to_remote(STATE_FILE)
