@@ -1,5 +1,3 @@
-import time
-
 import os
 import glob
 from datetime import datetime
@@ -9,7 +7,7 @@ from dotenv import load_dotenv
 if os.getenv("CI") is None:  # Typically, CICD systems set a CI environment variable
     load_dotenv(override=True)
 
-# required for sending email alerts
+# required for email alerts
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -17,8 +15,6 @@ from email.mime.multipart import MIMEMultipart
 EMAIL_ADDRESS = os.getenv('SENDER_EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.getenv('SENDER_EMAIL_PASSWORD')
 RECIPIENT_EMAIL = os.getenv('RECIPIENT_EMAIL_ADDRESS')
-
-# Access environment variables
 MAX_AGE_SECONDS = os.getenv("ALERT_INTERVAL_SECONDS")
 
 # global state variables
@@ -141,13 +137,12 @@ def send_email(subject, body):
 
 if __name__ == "__main__":
 
-    while True:
-        states_dir = "./states"
-        state_file = "./state.txt"
+        repo_root = '../..'
+
+        states_dir = f"{repo_root}/data/states"
+        state_file = f"{repo_root}/data/state.txt"
         calculate_state(states_dir, state_file)
 
-        heartbeats_dir = "./heartbeats"
-        heartbeat_file = "./heartbeat.txt"
+        heartbeats_dir = f"{repo_root}/data/heartbeats"
+        heartbeat_file = f"{repo_root}/data/heartbeat.txt"
         calculate_heartbeat(heartbeats_dir, heartbeat_file)
-
-        time.sleep(10)
