@@ -30,7 +30,7 @@ RECIPIENT_EMAIL = env['RECIPIENT_EMAIL_ADDRESS']
 REPO_URL = env['REPO_URL']
 GITHUB_TOKEN = env['GITHUB_TOKEN']
 BRANCH = env['BRANCH']
-TIMESTAMP_FILE = env['TIMESTAMP_FILE']
+HEARTBEAT_FILE = env['HEARTBEAT_FILE']
 STATE_FILE = env['STATE_FILE']
 
 # --- StateMachine Class ---
@@ -64,10 +64,10 @@ class StateMachine:
         self.push_to_remote(STATE_FILE)
 
     @property
-    def timestamp(self):
-        """Update the timestamp file with and return current timestamp."""
+    def heartbeat(self):
+        """Update the heartbeat file with and return current timestamp."""
         timestamp = datetime.now().isoformat()
-        with open(TIMESTAMP_FILE, "w") as f:
+        with open(HEARTBEAT_FILE, "w") as f:
             f.write(timestamp)
         return timestamp
 
@@ -91,7 +91,7 @@ class StateMachine:
         """Push updates to the repository."""
         repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
         try:
-            self.timestamp
+            self.heartbeat
             subprocess.run(["git", "-C", '.', "add", "."], check=True)
             subprocess.run(["git", "commit", "-a", "-m", f"auto-update of {file}"], check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -158,7 +158,7 @@ if __name__ == "__main__":
 #        try:
 #            subprocess.run(["git", "add", *file_list], 
 #                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-#            subprocess.run(["git", "commit", "-m", f"auto-update of {STATE_FILE} and {TIMESTAMP_FILE}"],
+#            subprocess.run(["git", "commit", "-m", f"auto-update of {STATE_FILE} and {HEARTBEAT_FILE}"],
 #                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
             # force push is safe as knowledge of current state is updated from the repo file via API
 #            subprocess.run(["git", "push", "--force", repo_url_with_token, BRANCH], 
