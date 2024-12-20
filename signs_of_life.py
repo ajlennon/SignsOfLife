@@ -149,7 +149,7 @@ def main():
 
     # Periodically check inactivity
     while True:
-        print(state_machine.state)
+        print(state_machine.remote_state)
         state_machine.check_activity()
         time.sleep(CHECK_INTERVAL)  # Check more frequently than the alert threshold
 
