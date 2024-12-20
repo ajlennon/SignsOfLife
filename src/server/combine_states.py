@@ -1,5 +1,6 @@
 import os
 import glob
+from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -137,7 +138,8 @@ def send_email(subject, body):
 
 if __name__ == "__main__":
 
-        repo_root = '../..'
+        # presumes script lives under REPO_ROOT/src/server
+        repo_root = Path(__file__).parent.parent.parent
 
         states_dir = f"{repo_root}/data/states"
         state_file = f"{repo_root}/data/state.txt"
