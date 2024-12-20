@@ -24,7 +24,7 @@ jobs:
 
       - name: Run OR Calculation Script
         run: |
-          python calculate_states.py
+          python combine_states.py
 
       - name: Commit and Push Changes
         env:
