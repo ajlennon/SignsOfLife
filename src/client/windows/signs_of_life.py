@@ -1,9 +1,7 @@
 import time
-
-from pynput import mouse, keyboard
 import subprocess
+from pynput import mouse, keyboard
 from datetime import datetime
-
 from dotenv import dotenv_values, find_dotenv
 
 # --- Settings ---
