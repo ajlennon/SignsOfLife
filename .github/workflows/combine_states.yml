@@ -34,6 +34,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add state.txt
-          git commit -m "Update state.txt with logical combination of state_*.txt files" || echo "No changes to commit"
+          git add data/state.txt
+          git add data/heartbeat.txt
+          git commit -m "Update state.txt & heartbeat.txt with logical combination of device specific files" || echo "No changes to commit"
           git push
