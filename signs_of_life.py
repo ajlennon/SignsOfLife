@@ -39,10 +39,10 @@ class StateMachine:
         self.last_activity = time.time()
         self.alert_interval = alert_interval
         self.local_state = 'active'
-        self.state = self.local_state
+        self.remote_state = self.local_state
 
     @property
-    def state(self):
+    def remote_state(self):
         """
         returns the content of the repository state file (STATE_FILE).
         STATE_FILE is configurable in the .env file.
@@ -51,17 +51,17 @@ class StateMachine:
             str: The content of the state file if successful, None otherwise.
         """
         try:
-            self.pull_from_repo()
+            self.pull_from_remote()
             with open(STATE_FILE, "r", encoding="utf-8") as file:
                 return file.read().strip()
         except:
             return None
 
-    @state.setter
-    def state(self, state):
+    @remote_state.setter
+    def remote_state(self, state):
         with open(STATE_FILE, "w") as f:
             f.write(state)
-        self.push_to_repo(STATE_FILE)
+        self.push_to_remote(STATE_FILE)
 
     @property
     def timestamp(self):
@@ -76,32 +76,29 @@ class StateMachine:
         self.last_activity = time.time()
         if self.local_state == "inactive":
             self.local_state = "waking"
-            #self.update_state("waking")
 
     def check_activity(self):
         """Check for inactivity and transition states."""
         if time.time() - self.last_activity > self.alert_interval:
             self.local_state = "inactive"
-        self.state = self.local_state
-        #self.push_to_repo(STATE_FILE)
+        self.remote_state = self.local_state
+        
 
             #self.update_state("inactive")
-            #self.push_to_repo(STATE_FILE)
+            #self.push_to_remote(STATE_FILE)
         #elif self.state == "waking":
         #    self.update_state("active")
             #self.timestamp
-        #    self.push_to_repo(STATE_FILE)
+        #    self.push_to_remote(STATE_FILE)
         #else:
             #self.timestamp
-        #    self.push_to_repo(STATE_FILE)
+        #    self.push_to_remote(STATE_FILE)
 
-    def pull_from_repo(self):
-        #subprocess.run(["git", "pull"], check=True,
-        #               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        pass#print(self.state)
-        print("hello")
+    def pull_from_remote(self):
+        subprocess.run(["git", "pull"], check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    def push_to_repo(self, file):
+    def push_to_remote(self, file):
         """Push updates to the repository."""
         repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
         try:
@@ -165,7 +162,7 @@ if __name__ == "__main__":
 #
 # subprocess.run(["git", "add", file], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 #
-#    def push_to_repo(self, file_list):
+#    def push_to_remote(self, file_list):
 #        """Push updates to the repository."""
 #        repo_url_with_token = REPO_URL.replace("https://", f"https://{GITHUB_TOKEN}@")
 #        try:
@@ -195,7 +192,7 @@ if __name__ == "__main__":
 #            "Cache-Control": "no-cache"
 #        } if GITHUB_TOKEN else {}
 #
-#        self.pull_from_repo()
+#        self.pull_from_remote()
 #        with open(STATE_FILE, "r", encoding="utf-8") as file:
 #            print(file.read().strip())
 #            print("hello")
