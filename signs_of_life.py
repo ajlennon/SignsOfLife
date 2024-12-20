@@ -38,7 +38,8 @@ class StateMachine:
     def __init__(self, alert_interval):
         self.last_activity = time.time()
         self.alert_interval = alert_interval
-        self.state = 'active'
+        self.local_state = 'active'
+        self.state = self.local_state
 
     @property
     def state(self):
@@ -73,15 +74,16 @@ class StateMachine:
     def update_activity(self):
         """Update the last activity timestamp and handle waking state."""
         self.last_activity = time.time()
-        if self.state == "inactive":
-            self.state = "waking"
+        if self.local_state == "inactive":
+            self.local_state = "waking"
             #self.update_state("waking")
 
     def check_activity(self):
         """Check for inactivity and transition states."""
         if time.time() - self.last_activity > self.alert_interval:
-            self.state = "inactive"
-        self.push_to_repo(STATE_FILE)
+            self.local_state = "inactive"
+        self.state = self.local_state
+        #self.push_to_repo(STATE_FILE)
 
             #self.update_state("inactive")
             #self.push_to_repo(STATE_FILE)
