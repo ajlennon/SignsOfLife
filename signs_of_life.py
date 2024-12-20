@@ -1,32 +1,15 @@
-# UV integration ?
-#1. Create a lock file via push - will fail if updated by someone else
-#2. read state from repo via API
-#3. IF state needs to change, write state back to repo via force push
-#4. Remove lockfile
-
-#import os
 import time
-import smtplib
+
 from pynput import mouse, keyboard
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import subprocess
 from datetime import datetime
-import asyncio
-#import requests
-#import base64
 
 from dotenv import dotenv_values, find_dotenv
-
-# [active]->-send inactive->-[inactive]->-event->-[waking]->-send wake->-[active]
 
 # --- Settings ---
 env = dotenv_values(find_dotenv())
 CHECK_INTERVAL = int(env['CHECK_INTERVAL_SECONDS']) 
 ALERT_INTERVAL = int(env['ALERT_INTERVAL_SECONDS']) 
-EMAIL_ADDRESS = env['SENDER_EMAIL_ADDRESS']
-EMAIL_PASSWORD = env['SENDER_EMAIL_PASSWORD']
-RECIPIENT_EMAIL = env['RECIPIENT_EMAIL_ADDRESS']
 REPO_URL = env['REPO_URL']
 GITHUB_TOKEN = env['GITHUB_TOKEN']
 BRANCH = env['BRANCH']
@@ -43,19 +26,7 @@ class StateMachine:
 
     @property
     def remote_state(self):
-        """
-        returns the content of the repository state file (STATE_FILE).
-        STATE_FILE is configurable in the .env file.
-        
-        Returns:
-            str: The content of the state file if successful, None otherwise.
-        """
-        try:
-            self.pull_from_remote()
-            with open(STATE_FILE, "r", encoding="utf-8") as file:
-                return file.read().strip()
-        except:
-            return None
+        pass
 
     @remote_state.setter
     def remote_state(self, state):
@@ -72,20 +43,20 @@ class StateMachine:
         return timestamp
 
     def update_activity(self):
-        """Update the last activity timestamp and handle waking state."""
+        """Update the last activity timestamp""" # and handle waking state."""
         self.last_activity = time.time()
-        if self.local_state == "inactive":
-            self.local_state = "waking"
+#        self.local_state = "active"
+#        if self.local_state == "inactive":
+#            self.local_state = "waking"
 
     def check_activity(self):
         """Check for inactivity and transition states."""
         if time.time() - self.last_activity > self.alert_interval:
             self.local_state = "inactive"
+        else:
+            self.local_state = "active"
         self.remote_state = self.local_state
 
-    def pull_from_remote(self):
-        subprocess.run(["git", "pull"], check=True,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def push_to_remote(self, file):
         """Push updates to the repository."""
@@ -100,25 +71,6 @@ class StateMachine:
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError as e:
             print(f"Failed to push changes: {e}")
-
-    def send_email(self, subject, body):
-        """Send an email notification."""
-        try:
-            msg = MIMEMultipart()
-            msg["From"] = EMAIL_ADDRESS
-            msg["To"] = RECIPIENT_EMAIL
-            msg["Subject"] = subject
-            msg.attach(MIMEText(body, "plain"))
-
-            # Connect to the mail server
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()
-            server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-            server.send_message(msg)
-            server.quit()
-            print(f"Email sent: {body}")
-        except Exception as e:
-            print(f"Failed to send email: {e}")
 
 
 # --- Main Application ---
@@ -139,7 +91,7 @@ def main():
 
     # Periodically check inactivity
     while True:
-        print(state_machine.remote_state)
+#        print(state_machine.remote_state)
         state_machine.check_activity()
         time.sleep(CHECK_INTERVAL)  # Check more frequently than the alert threshold
 
@@ -301,3 +253,26 @@ if __name__ == "__main__":
         #else:
             #self.timestamp
         #    self.push_to_remote(STATE_FILE)
+
+
+
+
+#    @property
+#    def remote_state(self):
+#        """
+#        returns the content of the repository state file (STATE_FILE).
+#        STATE_FILE is configurable in the .env file.
+#        
+#        Returns:
+#            str: The content of the state file if successful, None otherwise.
+#        """
+#        try:
+#            self.pull_from_remote()
+#            with open(STATE_FILE, "r", encoding="utf-8") as file:
+#                return file.read().strip()
+#        except:
+#            return None
+
+#    def pull_from_remote(self):
+#        subprocess.run(["git", "pull"], check=True,
+#                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
