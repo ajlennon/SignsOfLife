@@ -1,0 +1,28 @@
+name: SignsOfLife
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  notify-the-world:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    - name: Grab client status
+      run: |
+        pwd
+        ls -l
+        CLIENT=$(echo "${{github.event.head_commit.message}}" | sed 's|.*/||' | cut -d '_' -f 2 | cut -d '.' -f 1)
+        CLIENT_STATUS=$(cat ${GITHUB_WORKSPACE}/data/states/state_${CLIENT}.txt)
+        echo "CLIENT=${CLIENT}" >> $GITHUB_ENV
+        echo "CLIENT_STATUS=${CLIENT_STATUS}" >> $GITHUB_ENV
+    - name: MQTT the client information
+      uses: juhrlass/mqtt-action@master
+      with:
+        protocol: mqtt
+        host: mqtt.dynamicdevices.co.uk
+        port: 1883
+        topic: "signsoflife/${{env.CLIENT}}"
+        message: ${{env.CLIENT_STATUS}}
