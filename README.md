@@ -1,12 +1,8 @@
 # SignsOfLife (User Activity Monitor)
 
-This project monitors user activity on a computer and sends email notifications when no user activity is detected for a 
-specified period and also when user activity resumes. It tracks both keyboard and mouse events and triggers alerts accordingly.
+This project monitors user activity on a computer and sends email notifications when no user activity is detected for a specified period and also when user activity resumes. It tracks both keyboard and mouse events and triggers alerts accordingly.
 
-This project is not designed for employee surveillance. Instead, it is intended as a passive health monitoring solution for
-individuals who live alone and spend significant time on their PC. Inspired by the need to ensure the well-being of a remote-working
-relative, it provides peace of mind by detecting inactivity and notifying friends or neighbours to check in, should something unexpected
-have happened.
+This project is not designed for employee surveillance. Instead, it is intended as a passive health monitoring solution for individuals who live alone and spend significant time on their PC. Inspired by the need to ensure the well-being of a remote-working relative, it provides peace of mind by detecting inactivity and notifying friends or neighbours to check in, should something unexpected have happened.
 
 ## Features
 - Monitors user activity in real-time (keyboard and mouse).
