@@ -1,3 +1,10 @@
+# Capture this error and report to the user by EMAIL!!!
+#
+# To https://github.com/LaurenceMolloy/SignsOfLife.git
+#  ! [remote rejected] main -> main (refusing to allow a Personal Access Token to create or update workflow `.github/workflows/combine_states.yml` without `workflow` scope)
+# error: failed to push some refs to 'https://github.com/LaurenceMolloy/SignsOfLife.git'
+# Failed to push changes: Command '['git', 'push', '--force', 'https://<GITHUB_PAT>@github.com/LaurenceMolloy/SignsOfLife.git', 'main']' returned non-zero exit status 1.
+
 import time
 import subprocess
 from pynput import mouse, keyboard
