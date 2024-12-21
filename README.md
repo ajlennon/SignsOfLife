@@ -40,3 +40,11 @@ have happened.
 ### 5. (PRODUCTION) Set up as a scheduled task or system service to run on startup:
    - Windows: Use Task Scheduler to run the script at startup.
    - Linux/macOS: Set up a cron job or use systemd to run the script automatically when the system starts.
+
+
+# CICD
+
+Combine_states.py runs every 30 minutes via CI/CD (see combine_states.yml in the .github/workflows folder). It aggregates heartbeats and statuses from all monitored devices, updates data/heartbeat.txt and data/state.txt, and sends email alerts for any changes, reporting lost/recovered communication with devices and user activity (the vital “signs of life” metric).
+
+Testing shows the process takes about 20 seconds of CI/CD runner time per run. At 30-minute intervals, this amounts to roughly 500 minutes per month. With GitHub providing 2000 free CI/CD minutes monthly, this should comfortably fit within your free allowance - assuming light CI/CD usage elsewhere.
+
